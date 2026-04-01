@@ -43,42 +43,78 @@ Enter inputs when asked:
 PROGRAM :
 
 ```
-usage_data = []
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Electricity Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h2>Electricity Usage Tracker</h2>
 
-days = int(input("Enter number of days: "))
-limit = float(input("Enter daily usage limit (units): "))
+    <input type="number" id="usage" placeholder="Enter usage">
+    <button onclick="addUsage()">Add</button>
+    <button onclick="showReport()">Show Report</button>
 
-# Input usage
-for i in range(days):
-    units = float(input(f"Day {i+1} electricity usage: "))
-    usage_data.append(units)
+    <pre id="output"></pre>
 
-print("\n⚡ Electricity Usage Report ⚡")
-total = 0
+    <canvas id="myChart" width="400" height="200"></canvas>
 
-for i in range(days):
-    print(f"Day {i+1}: {usage_data[i]} units")
-    total += usage_data[i]
-    
-    if usage_data[i] > limit:
-        print("⚠️ High electricity usage!")
+    <script>
+        let data = [];
+        let limit = 10;
+        let chart;
 
-# Average calculation
-average = total / days
+        function addUsage() {
+            let val = Number(document.getElementById("usage").value);
+            data.push(val);
+            alert("Added!");
+        }
 
-print("\nTotal Usage:", total, "units")
-print("Average Usage:", round(average, 2), "units")
+        function showReport() {
+            let total = 0;
+            let result = "";
 
-# Final suggestion
-if average > limit:
-    print("⚠️ Reduce electricity consumption!")
-else:
-    print("Good job! Efficient usage 👍")
+            data.forEach((val, i) => {
+                result += "Day " + (i+1) + ": " + val + " units\n";
+                total += val;
+                if (val > limit) result += "High usage!\n";
+            });
+
+            let avg = total / data.length;
+            result += "\nTotal: " + total;
+            result += "\nAverage: " + avg.toFixed(2);
+
+            document.getElementById("output").innerText = result;
+
+            drawGraph();
+        }
+
+        function drawGraph() {
+            let ctx = document.getElementById('myChart').getContext('2d');
+
+            if (chart) chart.destroy();
+
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map((_, i) => "Day " + (i+1)),
+                    datasets: [{
+                        label: 'Units Consumed',
+                        data: data,
+                        borderWidth: 2
+                    }]
+                }
+            });
+        }
+    </script>
+</body>
+</html>
 ```
 
 OUTPUT :
 
-<img width="679" height="559" alt="image" src="https://github.com/user-attachments/assets/a40c73a5-8eea-49cf-b937-29433a2b2cde" />
+<img width="1863" height="972" alt="image" src="https://github.com/user-attachments/assets/19bdb4c9-855a-453b-9ca9-536bffd6686c" />
 
 RESULT :
 
